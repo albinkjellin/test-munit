@@ -8,26 +8,33 @@
         http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
         http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/3.2/mule.xsd
         http://www.mulesoft.org/schema/mule/mock http://www.mulesoft.org/schema/mule/mock/1.0/mule-mock.xsd
-        http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/1.0/mule-munit.xsd ">
+        http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/1.0/mule-munit.xsd">
 
     <spring:beans>
         <spring:import resource="mule-config.xml"/>
+        <spring:import resource="testdata.xml"/>
     </spring:beans>
 
     <munit:config/>
-    <mulemock:config of="avaconf" name="avaconf"/>
+    <mulemock:config of="avaconf" name="avaconfmock"/>
+   <!--
+    <munit:before-test name="before.each.test" description="Reseting mocks...">
+
+        <mulemock:reset config-ref="avaconfmock"/>
+    </munit:before-test>
+    -->
 
     <munit:test name="TestAvalara"
 
                 description="
         We want to test that the flow always returns the same payload as we had before calling it.">
 
-
-        <munit:set payload-ref="#[string: Hello world!]"/>
-
+        <mulemock:expect config-ref="avaconfmock" when="validate-address" mustReturn-ref="#[string:abc]"/>
         <flow-ref name="main"/>
 
+        <logger message="#[groovy: payload.getClass()]" level="ERROR"/>
         <munit:assert-not-null/>
+        <munit:assert-true condition="#[groovy: payload == 'abc']"/>
     </munit:test>
 
 </mule>

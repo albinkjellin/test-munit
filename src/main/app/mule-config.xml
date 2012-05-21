@@ -24,10 +24,12 @@
 
     <flow name="main">
         <vm:inbound-endpoint path="in" exchange-pattern="request-response"/>
-
-        <avalara:validate-address account="1100068440" license="0FB02FADB01DE0E5" avalaraClient="dummy"
+        <logger message="Payload in flow = #[payload:]" level="ERROR" />
+        <avalara:validate-address config-ref="avaconf" account="1100068440" license="0FB02FADB01DE0E5" avalaraClient="dummy"
                                   line1="525 Nelson Rising Lane" city="San Francisco" country="USA" postalCode="94158"
                                   region="CA" date="#[groovy:new Date()]" taxRegionId="1"/>
+        <logger message="Payload in flow result = #[payload:]" level="ERROR" />
+        <expression-transformer evaluator="groovy" expression="'abc'"/>
         <object-to-string-transformer/>
     </flow>
 </mule>

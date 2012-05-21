@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Mule configuration that defines the common objects for testing.
+
+    This tests are written as examples for the Munit project, that's why we tests same scenario in different ways.
+
+    In order to  avoid rewriting the common beans we use this file as regular import.
+-->
+
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:spring="http://www.springframework.org/schema/beans"
+      xsi:schemaLocation="
+      http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+      http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/3.2/mule.xsd">
+
+
+    <spring:bean name="upsertType" class="java.lang.String">
+        <spring:constructor-arg value="Campaign"/>
+    </spring:bean>
+
+    <spring:bean name="externalIdFieldName" class="java.lang.String">
+        <spring:constructor-arg value="Name"/>
+    </spring:bean>
+
+    <spring:bean name="salesforceQuery" class="java.lang.String">
+        <spring:constructor-arg
+                value="SELECT Name, CreatedDate, EndDate, phone__c, cc_template__c FROM Campaign WHERE IsActive=true"/>
+    </spring:bean>
+
+    <spring:bean name="emptyMap" class="java.util.HashMap"/>
+
+    <spring:bean name="emptyList" class="java.util.ArrayList"/>
+    <spring:bean name="nonEmptyList" class="org.springframework.beans.factory.config.ListFactoryBean">
+        <spring:property name="sourceList">
+            <spring:list>
+                <spring:value>value 1</spring:value>
+                <spring:value>value 2</spring:value>
+            </spring:list>
+
+        </spring:property>
+    </spring:bean>
+
+    <spring:bean name="nonEmptyMap" class="org.springframework.beans.factory.config.MapFactoryBean">
+        <spring:property name="sourceMap">
+            <spring:map>
+                <spring:entry key="id1" value="test1"/>
+            </spring:map>
+        </spring:property>
+    </spring:bean>
+
+
+    <spring:bean name="upsertExpectedObjects" class="org.springframework.beans.factory.config.ListFactoryBean">
+        <spring:property name="sourceList">
+            <spring:list>
+                <spring:ref bean="upsertFirstParameter"/>
+            </spring:list>
+        </spring:property>
+    </spring:bean>
+
+    <spring:bean name="upsertFirstParameter" class="org.springframework.beans.factory.config.MapFactoryBean">
+        <spring:property name="sourceMap">
+            <spring:map>
+                <spring:entry key="Name" value="nameOfTheCampaign"/>
+                <spring:entry key="cc_template__c" value="theTemplate"/>
+            </spring:map>
+        </spring:property>
+    </spring:bean>
+
+    <spring:bean name="upsertHttpParameters" class="org.springframework.beans.factory.config.MapFactoryBean">
+        <spring:property name="sourceMap">
+            <spring:map>
+                <spring:entry key="campaignName" value="nameOfTheCampaign"/>
+                <spring:entry key="template" value="theTemplate"/>
+            </spring:map>
+        </spring:property>
+    </spring:bean>
+
+
+    <spring:bean name="httpParameteres" class="org.springframework.beans.factory.config.MapFactoryBean">
+        <spring:property name="sourceMap">
+            <spring:map>
+                <spring:entry key="http.method" value="get"/>
+            </spring:map>
+        </spring:property>
+    </spring:bean>
+
+</mule>
