@@ -49,6 +49,8 @@
 
         </pluginManagement>
 
+
+
         <plugins>
             <plugin>
                 <groupId>org.mule.tools</groupId>
@@ -154,6 +156,12 @@
                 </executions>
             </plugin>
         </plugins>
+
+        <testResources>
+            <testResource>
+                <directory>src/test/munit</directory>
+            </testResource>
+        </testResources>
 
     </build>
 
@@ -303,6 +311,13 @@
             <groupId>org.mule.munit</groupId>
             <artifactId>assert</artifactId>
             <version>1.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mule.munit</groupId>
+            <artifactId>mock</artifactId>
+            <version>1.0</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
