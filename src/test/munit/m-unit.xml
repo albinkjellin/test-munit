@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Mule Development Kit
+    Copyright 2010-2011 (c) MuleSoft, Inc.  All rights reserved.  http://www.mulesoft.com
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+-->
+
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:spring="http://www.springframework.org/schema/beans"
+      xmlns:mulemock="http://www.mulesoft.org/schema/mule/mock"
+      xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
+      xsi:schemaLocation="
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+        http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/3.2/mule.xsd
+        http://www.mulesoft.org/schema/mule/mock http://www.mulesoft.org/schema/mule/mock/1.0/mule-mock.xsd
+        http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/1.0/mule-munit.xsd">
+
+
+    <spring:beans>
+        <spring:import resource="mule-config.xml"/>
+        <!--<spring:import resource="common-definitions.xml"/>-->
+    </spring:beans>
+
+
+    <munit:config/>
+    <mulemock:config of="avaconf" name="avaconfmock"/>
+
+
+
+
+
+    <munit:test name="testingMainFlow"
+
+                description="
+        We want to test that the flow always returns the same payload as we had before calling it.">
+
+
+        <munit:set payload-ref="#[string: Hello world!]"/>
+
+        <flow-ref name="echoFlow"/>
+
+        <munit:assert-not-null/>
+        <munit:assert-that payloadIs-ref="#[string: com.avalara.avatax.services.ValidateResult@2f8c5b4f]"/>
+    </munit:test>
+
+<!--
+    <munit:test name="testingEchoWithANullPayload"
+                description="
+        Echo returns always the same as we have before it, so we need to get a Null Payload after it.">
+
+        <munit:set-null-payload/>
+
+        <flow-ref name="echoFlow"/>
+
+        <munit:assert-null/>
+    </munit:test>
+
+
+    <munit:test name="testSalesforceEmptyMap"
+                description="
+        We make a call to Salesforce but it returns no result.
+        If Salesforce returns an empty list then an empty json must be returned.
+        Null Payload is not accepted.">
+
+        <mulemock:expect config-ref="salesforceMock" when="query" mustReturn-ref="emptyList"/>
+
+        <flow-ref name="campaignInfoFlow"/>
+
+        <munit:assert-not-null/>
+        <munit:assert-that payloadIs-ref="#[string:[]]"/>
+    </munit:test>
+
+
+    <munit:test name="testThatSalesforceIsCorrectlyCalledWithVerify"
+
+                description="
+        Salesforce must be called with a correct query.
+        We need to validate that Salesforce is called querying the correct objects.">
+
+        <mulemock:expect config-ref="salesforceMock" when="query" mustReturn-ref="nonEmptyList"/>
+
+        <flow-ref name="campaignInfoFlow"/>
+
+        <mulemock:verify-call config-ref="salesforceMock" messageProcessor="query">
+            <mulemock:parameters>
+                <mulemock:parameter value-ref="salesforceQuery"/>
+            </mulemock:parameters>
+        </mulemock:verify-call>
+
+        <munit:assert-not-null/>
+        <munit:assert-that payloadIs-ref='#[string:["value 1","value 2"]]'/>
+    </munit:test>
+
+
+    <munit:test name="testThatSalesforceIsCorrectlyCalled"
+
+                description="
+        Salesforce must be called with a correct query.
+        We need to validate that Salesforce is called querying the correct objects.">
+
+        <mulemock:expect config-ref="salesforceMock" when="query" mustReturn-ref="nonEmptyList">
+            <mulemock:parameters>
+                <mulemock:parameter value-ref="salesforceQuery"/>
+            </mulemock:parameters>
+        </mulemock:expect>
+
+
+        <flow-ref name="campaignInfoFlow"/>
+        <munit:assert-not-null/>
+        <munit:assert-that payloadIs-ref='#[string:["value 1","value 2"]]'/>
+    </munit:test>
+
+
+    <munit:test name="testThatNullPayloadIfFailsToConnect"
+
+                description="
+        Salesforce tries to connect but fails.">
+
+        <mulemock:fail-on-connect config-ref="salesforceMock"/>
+
+        <flow-ref name="campaignInfoFlow"/>
+
+        <munit:assert-null/>
+    </munit:test>
+
+
+    <munit:test name="testThatNullPayloadIfFailsWhenQuery"
+
+                description="
+        Salesforce fails when it tries to execute the query.
+        If the query fails then we return null payload.">
+
+        <mulemock:expect-fail config-ref="salesforceMock" when="query" throwA="java.lang.Exception"/>
+
+        <flow-ref name="campaignInfoFlow"/>
+
+        <munit:assert-null/>
+    </munit:test>
+
+
+    <munit:test name="testGroovyTransformerCaseMale"
+                description="
+       Testing That the transformer is returning the right information for Male person.">
+        <munit:set payload-ref="#[string:Male]"/>
+
+        <transformer ref="genderMappingTransformer"/>
+
+        <munit:assert-not-null/>
+        <munit:assert-that payloadIs-ref="#[string:M]"/>
+    </munit:test>
+
+
+    <munit:test name="testGroovyTransformerCaseFemale"
+                description="
+       Testing That the transformer is returning the right information for Female person.">
+        <munit:set payload-ref="#[string:Female]"/>
+
+        <transformer ref="genderMappingTransformer"/>
+
+        <munit:assert-not-null/>
+        <munit:assert-that payloadIs-ref="#[string:F]"/>
+    </munit:test>
+
+    <munit:test name="testGroovyTransformerWrongCase"
+                description="
+       Testing That the transformer is returning the right information for Wrong Gender.">
+        <munit:set payload-ref="#[string:something]"/>
+
+        <transformer ref="genderMappingTransformer"/>
+
+        <munit:assert-not-null/>
+        <munit:assert-that payloadIs-ref="#[string:0]"/>
+    </munit:test>
+    -->
+
+</mule>
