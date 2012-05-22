@@ -59,6 +59,15 @@
                 <extensions>true</extensions>
                 <configuration>
                     <copyToAppsDirectory>true</copyToAppsDirectory>
+                    <inclusions>
+
+                        <inclusion>
+                            <groupId>org.mule.modules</groupId>
+                            <artifactId>mule-module-avalara</artifactId>
+                        </inclusion>
+
+
+                    </inclusions>
                 </configuration>
             </plugin>
             <plugin>
@@ -310,13 +319,13 @@
         <dependency>
             <groupId>org.mule.munit</groupId>
             <artifactId>assert</artifactId>
-            <version>1.0</version>
+            <version>1.0.1-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.mule.munit</groupId>
             <artifactId>mock</artifactId>
-            <version>1.0</version>
+            <version>1.0.1-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
