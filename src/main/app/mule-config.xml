@@ -29,7 +29,25 @@
                                   line1="525 Nelson Rising Lane" city="San Francisco" country="USA" postalCode="94158"
                                   region="CA" date="#[groovy:new Date()]" taxRegionId="1"/>
         <logger message="Payload in flow result = #[payload:]" level="ERROR" />
-        <expression-transformer evaluator="groovy" expression="'abc'"/>
-        <object-to-string-transformer/>
+
     </flow>
+
+
+    <flow name="check">
+        <http:inbound-endpoint path="trigger" host="localhost" port="8881" exchange-pattern="request-response"/>
+        <logger message="Payload in flow = #[payload:]" level="ERROR" />
+        <avalara:validate-address config-ref="avaconf" account="1100068440" license="0FB02FADB01DE0E5" avalaraClient="dummy"
+                                  line1="525 Nelson Rising Lane" city="San Francisco" country="USA" postalCode="94158"
+                                  region="CA" date="#[groovy:new Date()]" taxRegionId="1"/>
+        <logger message="Payload in flow result = #[payload:]" level="ERROR" />
+        <logger message="status = #[groovy: payload.resultCode]" level="ERROR" />
+        <logger message="taxable = #[groovy: payload.taxable]" level="ERROR" />
+        <logger message="addressType = #[groovy: payload.validAddresses.validAddress.first().addressType]" level="ERROR" />
+        <logger message="taxRegionId = #[groovy: payload.validAddresses.validAddress.first().taxRegionId]" level="ERROR" />
+        <logger message="fipsCode = #[groovy: payload.validAddresses.validAddress.first().fipsCode]" level="ERROR" />
+        <logger message="postNet = #[groovy: payload.validAddresses.validAddress.first().postalCode]" level="ERROR" />
+        <object-to-string-transformer/>
+
+    </flow>
+
 </mule>
